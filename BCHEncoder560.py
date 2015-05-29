@@ -1,4 +1,4 @@
-#!/usr/local/sage/sage -python
+#!/usr/local/sage/default/sage -python
 # coding: utf-8
 
 import sys            # for argv function

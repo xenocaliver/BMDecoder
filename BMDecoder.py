@@ -1,107 +1,103 @@
-#!/usr/local/sage/sage -python
+#!/usr/local/sage/default/sage -python
 # coding: utf-8
 
 import sys # for argv function
+
 from sage.all import *
 
-DIMENSION = 7                      # データビット数
-DEGREEOFGENERATOR = 8              # 生成多項式の次数
-DEGREEOFMINIMUMPOLYNOMIAL = 4      # 最小多項式の次数
-NUMBEROFMINIMUMPOLYNOMIAL = 2      # 最小多項式の個数
-# primitive polynomial = x^4 + x + 1
-INPUTFILE   = '/home/mnemodyne/workspace/Verilog/BCH16_2/input.dat'
-CODEWORD01  = '/home/mnemodyne/workspace/Verilog/BCH16_2/codeword01.dat'
-CODEWORD08  = '/home/mnemodyne/workspace/Verilog/BCH16_2/codeword08.dat'
-CODEWORD16  = '/home/mnemodyne/workspace/Verilog/BCH16_2/codeword16.dat'
-CHECKBITS01 = '/home/mnemodyne/workspace/Verilog/BCH16_2/checkbits01.dat'
-CHECKBITS08 = '/home/mnemodyne/workspace/Verilog/BCH16_2/checkbits08.dat'
-CHECKBITS16 = '/home/mnemodyne/workspace/Verilog/BCH16_2/checkbits16.dat'
 
-CORRECTEDDATA = './corrected.dat'
-      
-def generateTestData(BaseElement, MultiplicativeOrder):
-    CodeWordLength = BaseElement**MultiplicativeOrder - 1
-    try:
-        fp = open(INPUTFILE, 'w')
-        for i in range(0, CodeWordLength - 1):
-            fp.write(str(0))
-#            if(a == 1):
-#                a = 0
-#            else:
-#                a = 1
-        fp.write(str(1))
-    except IOError:
-        print u"ファイルを開けませんでした"
-        sys.exit()
-    fp.close()
-    return
+def generateRandomData(Dimension):
+    u = random_vector(Dimension, 0, 2)
+    return u
 
-def BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, Filename):
-
-    # open file and read bit stream
-    try:
-        fp = open(Filename, 'r')
-        input = []
-        for i in range(0, BaseElement**MultiplicativeOrder - 1):
-            input.append(0)
-        for i in range(0, BaseElement**MultiplicativeOrder - 1):
-            input[i] = int(fp.read(1), 2)       #2進数として読み込み
-        fp.close()
-    except IOError:
-        print u"ファイルを開けませんでした:{0}".format(Filename)
-        sys.exit()
-
-    #get syndromes     
-    syndromes = BCHSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits)
-    
-    # calculate error locator
-    sigma = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
-    
-    # return error position
-    errorposition = chien(sigma, BaseElement, MultiplicativeOrder)
-    
-    # write corrected input[] to a file "corrected.dat"
-    correctData(errorposition, input)
-
-#end of function
-
-########################### Correct Data ##################################
-def correctData(errorposition, input):
-   
-    # reverse input[]
-    input.reverse()
-    
-    for i in errorposition:
-        input[i] = bitflip(input[i])
-    
-    # reverse agaom input[] avoiding conflict other functions
-    input.reverse()
-
-    # open file and save corrected data
-    try:
-        #open file
-        fp = open(CORRECTEDDATA, 'w')
-
-        for i in range(0, BaseElement**MultiplicativeOrder - 1):
-            fp.write(str(input[i]))       #write as a 0 or 1 character
-        fp.close()
-    except IOError:
-        print u"ファイルを開けませんでした:{0}".format(Filename)
-        sys.exit()
-
-   
-#end of function
-
-############################# bit flip function ##########################
-def bitflip(x):
-    y = 0
-    if x == 0:
-        y = 1
+def makeCodeword(data, q, m, CorrectableBits, BaseElement, NarrowFlag):
+    q = BaseElement
+    m = MultiplicativeOrder
+    x = PolynomialRing(GF(q), 'x').gen()
+    if m == 14:
+        f=x**14+x**10+x**6+x+1
+        K = GF(q**m, name='alpha', modulus=f)
     else:
-        y = 0
-    
-    return y
+        K = GF(q**m, name='alpha')
+   
+    Dimension = q**m - 1 - m*CorrectableBits 
+    v = 0
+    for i in range(0, Dimension):
+       v += data[i]*x**i
+    v = v*x**(m*CorrectableBits)
+    #calculate generator polynomial
+    generator = getBCHCodeGeneratingPolynomials(q**m - 1, 2*CorrectableBits + 1, BaseElement, NarrowFlag = 0)
+    # divide data bits by generator
+    quorem = v.quo_rem(generator)
+    # c = v + remainder
+    c = v + quorem[1]
+    return c
 
+def injectErrors(codeword, CorrectableBits, CodeLength, BaseElement, MultiplicativeOrder):
+    q = BaseElement
+    m = MultiplicativeOrder
+    x = PolynomialRing(GF(q), 'x').gen()
+    if m == 14:
+        f=x**14+x**10+x**6+x+1
+        K = GF(q**m, name='alpha', modulus=f)
+    else:
+        K = GF(q**m, name='alpha')
+
+    position = []
+    while(len(position) != CorrectableBits):
+        r = ZZ.random_element(CodeLength, distribution = "uniform")
+        if r not in position:
+            position.append(r)
+    position.sort()
+#    print position
+#    tmp = 1*0 + 0*x
+#    for p in position:
+#        tmp += x**p
+#    y = codeword + tmp
+#    return y
+    return position
+# end of function
+
+def verify(pos1, pos2):
+    if pos1 == pos2:
+        return True
+    else:
+        return False
+#################################################    
+def BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, CodeLength):
+    q = BaseElement
+    m = MultiplicativeOrder
+    x = PolynomialRing(GF(q), 'x').gen()
+    
+    # generate random data
+    u = generateRandomData(CodeLength - CorrectableBits*MultiplicativeOrder)
+    # make codeword polynomial
+    c = makeCodeword(u, BaseElement, MultiplicativeOrder, CorrectableBits, BaseElement, NarrowFlag)
+    # determin error position
+    errorposition = injectErrors(c, CorrectableBits, CodeLength, BaseElement, MultiplicativeOrder)
+    # inject errors
+    y = 1*0 + 0*x
+    tmp = 1*0 + 0*x
+    for pos in errorposition:
+        tmp += x**pos
+    y = c + tmp
+    # make syndrome
+    syndromes = BCHSyndrome(y, BaseElement, MultiplicativeOrder, CorrectableBits)
+    # create error locator polynomial
+    errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
+    # chien search
+    pointout = chien(errorlocator, BaseElement, MultiplicativeOrder)
+    #verify
+    result = verify(errorposition, pointout)
+    if result == True:
+        print "Correction is successfully completed."
+    else:
+        print "Oh my God! Correction is failed."
+        print errorposition
+        print pointout
+        print errorlocator
+        sys.exit()
+    return result
 #end of function
 
 ########################### Syndrome Calculation ##########################
@@ -118,27 +114,24 @@ def BCHSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits):
     # generate primitive element alpha        
     alpha = K.gen()   
 
-    #initial condition   
-    codeword = 0
-    for i in range(0, q**m - 1):
-        codeword += input[i]*x**(q**m - 2 - i)
 
 #    print "<syndrome> codeword = {0}".format(codeword)
     #calculate generator polynomial
     generator = getBCHCodeGeneratingPolynomials(q**m - 1, 2*CorrectableBits + 1, BaseElement, NarrowFlag = 0)
     
     #check errors
-    residue = codeword%generator 
-    if residue == 0:
+    quorem = input.quo_rem(generator)
+    if quorem[1] == 0:
         print "<BCHSyndrome> No Error"
         sys.exit(1)
 
+    remainder = quorem[1]
     #declare syndromes as a list   
     syndromes = []
     
     #add syndromes
     for i in range(1, 2*CorrectableBits + 1):
-        syndromes.append(residue(alpha**i))
+        syndromes.append(remainder(alpha**i))
             
     return syndromes
 
@@ -218,13 +211,13 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
 
         #calculation sigma
         sigma = deltatmp*sigma+DELTA*z*tautmp
-        sigmacoeffs = sigma.coeffs()
+        sigmacoefficients = sigma.coefficients()
         print "{0:>2} sigma = {1}".format(i, sigma)
         #calculation DELTA
         #DELTA(i+1)=S_{i+1}*sigma_{0}^{(i)}+S_{i}*sigma_{1}^{(i)}+...+S_{i+1-nu_{i}}*sigma_{nu_{i}}^{(i)}
         #nu_{i} = sigma^{(i)}.degree()
         if i == 2*CorrectableBits - 1:
-            zeta = sigma.coeffs()
+            zeta = sigma.coefficients()
             sigma = sigma/zeta[0]
             return sigma
         else:
@@ -235,8 +228,8 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
             DELTA = 0
             for j in range(0, nu + 1):
                 print "{0:>2} i + 1 -j = {1} j = {2}".format(i, i + 1 - j, j)
-                DELTA += syndromes[i + 1 - j]*sigmacoeffs[j]
-#                print "{0:>2} j = {1} x = {2}".format(i, j, syndromes[i + 1 - j]*sigmacoeffs[j])
+                DELTA += syndromes[i + 1 - j]*sigmacoefficients[j]
+#                print "{0:>2} j = {1} x = {2}".format(i, j, syndromes[i + 1 - j]*sigmacoefficients[j])
 #            DELTA = DELTA%2
             print "{0:>2} DELTA = {1}".format(i, DELTA)
 #end of function
@@ -283,16 +276,17 @@ def getBCHCodeGeneratingPolynomials(CodeWordLength, MinimumDistance, BaseElement
 if __name__ == '__main__':
     #translate command line argument
     argvs = sys.argv           #argvs is a list of commandline argument
-    if len(argvs) != 2:
-        print "Usage ./BMdecoder <file name>"
-        sys.exit()
-
-    Filename = argvs[1]
     # generate Test Data
     BaseElement = 2
-    MinimumDistance = 81
+    MinimumDistance = 5 
     CorrectableBits = (MinimumDistance - 1)/2
-    MultiplicativeOrder = 14
+    MultiplicativeOrder = 4
     NarrowFlag = 0
-#    generateTestData(BaseElement, MultiplicativeOrder)
-    BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, Filename)
+    CodeLength = BaseElement**MultiplicativeOrder - 1
+#    u = generateRandomData(7)
+#    c = makeCodeword(u, BaseElement, MultiplicativeOrder, CorrectableBits, BaseElement, NarrowFlag)
+#    y = injectErrors(c, CorrectableBits, CodeLength, BaseElement, MultiplicativeOrder)
+#    syndromes = BCHSyndrome(y, BaseElement, MultiplicativeOrder, CorrectableBits)
+#    errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
+#    errorposition = chien(errorlocator, BaseElement, MultiplicativeOrder)
+    result = BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, CodeLength)
