@@ -93,9 +93,10 @@ def BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, CodeLength):
         print "Correction is successfully completed."
     else:
         print "Oh my God! Correction is failed."
-        print errorposition
-        print pointout
-        print errorlocator
+        print "error position = {0}".format(errorposition)
+        print "result = {0}".format(pointout)
+        print "error locator = {0}".format(errorlocator)
+        print "syndromes = {0}".format(syndromes)
         sys.exit()
     return result
 #end of function
@@ -289,4 +290,5 @@ if __name__ == '__main__':
 #    syndromes = BCHSyndrome(y, BaseElement, MultiplicativeOrder, CorrectableBits)
 #    errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
 #    errorposition = chien(errorlocator, BaseElement, MultiplicativeOrder)
-    result = BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, CodeLength)
+    for i in range(0, 10000):
+        result = BCHDecoder(BaseElement, CorrectableBits, MultiplicativeOrder, CodeLength)
