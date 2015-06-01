@@ -212,13 +212,13 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
 
         #calculation sigma
         sigma = deltatmp*sigma+DELTA*z*tautmp
-        sigmacoefficients = sigma.coefficients()
+        sigmacoefficients = sigma.coefficients(sparse = False)
         print "{0:>2} sigma = {1}".format(i, sigma)
         #calculation DELTA
         #DELTA(i+1)=S_{i+1}*sigma_{0}^{(i)}+S_{i}*sigma_{1}^{(i)}+...+S_{i+1-nu_{i}}*sigma_{nu_{i}}^{(i)}
         #nu_{i} = sigma^{(i)}.degree()
         if i == 2*CorrectableBits - 1:
-            zeta = sigma.coefficients()
+            zeta = sigma.coefficients(sparse = False)
             sigma = sigma/zeta[0]
             return sigma
         else:
