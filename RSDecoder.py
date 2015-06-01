@@ -52,7 +52,7 @@ def injectErrors(codeword, CorrectableBits, CodeLength, BaseElement, Multiplicat
     print position
     tmp = 1*0 + 0*x
     for p in position:
-        tmp += x**p
+        tmp += K.random_element()*x**p
     print tmp
     return tmp 
 #    return position
@@ -60,6 +60,7 @@ def injectErrors(codeword, CorrectableBits, CodeLength, BaseElement, Multiplicat
 
 def verify(pos1, pos2):
 
+    print "pos1 = {0}, pos2 = {1}".format(pos1, pos2)
     if pos1 == pos2:
         return True
     else:
@@ -68,7 +69,7 @@ def verify(pos1, pos2):
 def RSDecoder(BaseElement, MultiplicativeOrder, CodeLength, CorrectableBits):
     Fq = GF(BaseElement**MultiplicativeOrder, name = 'alpha')
     x = PolynomialRing(Fq, 'x').gen()
-    
+    result = False
     # generate random data
     u = generateRandomData(BaseElement, MultiplicativeOrder, CorrectableBits)
     # make codeword polynomial
@@ -81,14 +82,19 @@ def RSDecoder(BaseElement, MultiplicativeOrder, CodeLength, CorrectableBits):
     # make syndrome
     syndromes = RSSyndrome(y, BaseElement, MultiplicativeOrder, CorrectableBits)
     # create error locator polynomial
-    errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
+    if syndromes == 0:
+        return True
+    else:
+        errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
     # chien search
-    pointout = chien(errorlocator, BaseElement, MultiplicativeOrder)
-    ErrorPolynomial = Forney(errorlocator, syndromes, pointout, BaseElement, MultiplicativeOrder, CorrectableBits)
+        pointout = chien(errorlocator, BaseElement, MultiplicativeOrder)
+        ErrorPolynomial = Forney(errorlocator, syndromes, pointout, BaseElement, MultiplicativeOrder, CorrectableBits)
     #verify
-    result = verify(errors, ErrorPolynomial)
+        result = verify(errors, ErrorPolynomial)
+
     if result == True:
         print "Correction is successfully completed."
+        print "Corrected polynomial = {0}".format(y + ErrorPolynomial)
     else:
         print "Oh my God! Correction is failed."
         print "error position = {0}".format(errors)
@@ -103,12 +109,8 @@ def RSDecoder(BaseElement, MultiplicativeOrder, CodeLength, CorrectableBits):
 def RSSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits):
     q = BaseElement
     m = MultiplicativeOrder
-    x = PolynomialRing(GF(q), 'x').gen()
-    if m == 14:
-        f=x**14+x**10+x**6+x+1
-        K = GF(q**m, name='alpha', modulus=f)
-    else:
-        K = GF(q**m, name='alpha')
+    K = GF(q**m, name='alpha')
+    x = PolynomialRing(K, 'x').gen()
 
     # generate primitive element alpha        
     alpha = K.gen()   
@@ -121,9 +123,9 @@ def RSSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits):
     #check errors
     quorem = input.quo_rem(generator)
     if quorem[1] == 0:
-        print "<BCHSyndrome> No Error"
-        sys.exit(1)
-
+        print "<RSSyndrome> No Error"
+        return quorem[1]
+    
     remainder = quorem[1]
     #declare syndromes as a list   
     syndromes = []
@@ -234,13 +236,13 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
 
         #calculation sigma
         sigma = deltatmp*sigma+DELTA*x*tautmp
-        sigmacoefficients = sigma.coefficients()
+        sigmacoefficients = sigma.coefficients(sparse = False)
         print "{0:>2} sigma = {1}".format(i, sigma)
         #calculation DELTA
         #DELTA(i+1)=S_{i+1}*sigma_{0}^{(i)}+S_{i}*sigma_{1}^{(i)}+...+S_{i+1-nu_{i}}*sigma_{nu_{i}}^{(i)}
         #nu_{i} = sigma^{(i)}.degree()
         if i == 2*CorrectableBits - 1:
-            zeta = sigma.coefficients()
+            zeta = sigma.coefficients(sparse = False)
             sigma = sigma/zeta[0]
             return sigma
         else:
