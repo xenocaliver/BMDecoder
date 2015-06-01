@@ -58,14 +58,9 @@ def injectErrors(codeword, CorrectableBits, CodeLength, BaseElement, Multiplicat
 #    return position
 # end of function
 
-def verify(pos1, pos2, BaseElement, MultiplicativeOrder):
-    Fq = GF(BaseElement**MultiplicativeOrder, name = 'alpha')
-    x = PolynomialRing(Fq, 'x').gen()
-    result = 0 + 0*x
-    for i in pos2:
-        result += x**i
+def verify(pos1, pos2):
 
-    if pos1 == result:
+    if pos1 == pos2:
         return True
     else:
         return False
@@ -89,8 +84,9 @@ def RSDecoder(BaseElement, MultiplicativeOrder, CodeLength, CorrectableBits):
     errorlocator = BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits)
     # chien search
     pointout = chien(errorlocator, BaseElement, MultiplicativeOrder)
+    ErrorPolynomial = Forney(errorlocator, syndromes, pointout, BaseElement, MultiplicativeOrder, CorrectableBits)
     #verify
-    result = verify(errors, pointout, BaseElement, MultiplicativeOrder)
+    result = verify(errors, ErrorPolynomial)
     if result == True:
         print "Correction is successfully completed."
     else:
@@ -174,6 +170,35 @@ def chien(errorlocator, BaseElement, MultiplicativeOrder):
     return errorposition
 
 # end of function
+###################### Error Evaluation with Forney's formula #########################
+def Forney(errorlocator, syndromes, errorposition, BaseElement, MultiplicativeOrder, CorrectableBits):
+    Fq = GF(BaseElement**MultiplicativeOrder, name = 'alpha')
+    alpha = Fq.gen()
+    x = PolynomialRing(Fq, 'x').gen()
+
+    i = 0
+    SyndromePolynomial = 0 + 0*x
+    for s in syndromes:
+        SyndromePolynomial += s*x**i 
+        i += 1
+    print "S(x) = {0}".format(SyndromePolynomial)
+    Omega = errorlocator*SyndromePolynomial
+    quorem = Omega.quo_rem(x**(2**CorrectableBits))
+    Omega = quorem[1]
+    print "Omega(x) = {0}".format(Omega)
+    dsigma = diff(errorlocator, x)
+    print "sigma = {0}, dsigma = {1}".format(errorlocator, dsigma)
+    ErrorPolynomial = 0 + 0*x
+    for pos in errorposition:
+        numerator = Omega(alpha**(-pos))
+        denominator = dsigma(alpha**(-pos))
+        errorvalue = numerator/denominator
+        print "error value = {0}".format(errorvalue)
+        ErrorPolynomial += errorvalue*x**pos
+    
+    return ErrorPolynomial
+# end of function 
+###################### Berlekamp Massey Decoder ###################################
 def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
     q = BaseElement
     m = MultiplicativeOrder
