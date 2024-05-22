@@ -25,7 +25,7 @@ Regarding Reed-Solomon code's demo program, run `RSDecoder.py`.
 sage RSDecoder.py
 ```
 
-## Impliementation details
+## Implimentation details
 ### Cyclic codes
 Before discussing Berlekamp-Massey algorithm, we must discuss cyclic codes. We begin crush course for cyclic codes. For persons who want to learn cyclic codes deeply, I recommend coding theory text book e.g. [Error Correction Coding: Mathematical Methods and Algorithms](https://onlinelibrary.wiley.com/doi/book/10.1002/0471739219). I assume that readers know basic algebra.
 
