@@ -17,9 +17,27 @@
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-    <script type="text/javascript" id="MathJax-script" async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
+
+      <!-- inline config -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+         RR: "{\\bf R}",
+         bold: ["{\\bf #1}", 1],
+         indep: "{\\perp \\!\\!\\! \\perp}",
+       }
+     },
+     svg: {
+      fontCache: 'global'
+    },
+  };
+  </script>
+
+<!-- load MathJax -->
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"> </script>
+
   </head>
   <body>
     <a id="skip-to-content" href="#content">Skip to the content.</a>
