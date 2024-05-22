@@ -5,7 +5,7 @@ This program is a Berlekamp-Massey decoding algorithm demo program.
 Install [sage](https://www.sagemath.org). This program is written in [sage](https://www.sagemath.org). [Sage](https://www.sagemath.org) is a programming language for mathematicians. [Sage](https://www.sagemath.org) is python-based language and has many extensive features for algebra, algebraic geometry and number theory.
 
 
-## Downdloading the demo program
+## Downloading the demo program
 Clone demo program's repository.
 
 ```sh
