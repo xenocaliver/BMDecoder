@@ -1,4 +1,4 @@
-#!/usr/local/sage/default/sage -python
+#!/Applications/Sage-6.8.app/Contents/MacOS/Sage -python
 # coding: utf-8
 
 import sys # for argv function
