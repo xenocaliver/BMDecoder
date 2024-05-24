@@ -54,7 +54,7 @@ Let $p$ be a prime number and $m$ be a natural number. And let $q=p^{m}$ and $\m
 
 - Find $\mathbb{F}_{p^{m}}$ which as $n$ primitive $n$ - root of unity $\alpha$.
 - Select Non-negative integer $b$.
-- Write down $2t$ $ consecutive $ powers of $\alpha$:
+- Write down $2t$ **consecutive** powers of $\alpha$:
 
 $$
 \alpha^{b},\alpha^{b+1},\ldots,\alpha^{b+2t-1}.
