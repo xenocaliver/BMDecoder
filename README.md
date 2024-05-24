@@ -29,7 +29,7 @@ sage RSDecoder.py
 ### Cyclic codes
 Before discussing Berlekamp-Massey algorithm, we must discuss cyclic codes. We begin crush course for cyclic codes. For persons who want to learn cyclic codes deeply, I recommend coding theory text book e.g. [Error Correction Coding: Mathematical Methods and Algorithms](https://onlinelibrary.wiley.com/doi/book/10.1002/0471739219). I assume that readers know basic algebra.
 
-Let $\mathbb{F}_{q}$ be a finite field with characteristic $q$. In coding theory, $q=2^{M}$ and $M$ is a natural number. Let $k$ be a natural number called "dimension". $m_{i}\in\mathbb{F}_{q}(i=0,\ldots,k-1)$ and we call $\boldsymbol{m} = (m_{0},\ldots,m_{k-1})$ a message vector. We express the message as a polynomial
+Let $ \mathbb{F}_{q} $ be a finite field with characteristic $ q $. In coding theory, $ q=2^{M} $ and $M$ is a natural number. Let $ k $ be a natural number called "dimension". $ m_{i}\in\mathbb{F}_{q}(i=0,\ldots,k-1) $ and we call $ \boldsymbol{m} = (m_{0},\ldots,m_{k-1}) $ a message vector. We express the message as a polynomial
 
 $$
 m(x)=m_{0}+m_{1}x+\cdots+m_{k-1}x^{k-1}
