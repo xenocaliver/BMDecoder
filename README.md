@@ -68,7 +68,7 @@ If $b=1$ on construction procedure, the BCH code is said to be **narrow**. If $ 
 ### Reed-Solomon Codes
 Reed-Solomon codes is $ q $-ary BCH codes whose length equals to $ p^{m} - 1 $.
 
-In $\mathbb{F}_{p^{m}}$, the minimal polynomials for any root $ \alpha $ is simply $ (x-\alpha) $. Therefore, generator polynomial of Reed-Solomon codes is 
+In $\mathbb{F}_{q}$, the minimal polynomials for any root $ \alpha $ is simply $ (x-\alpha) $. Therefore, generator polynomial of Reed-Solomon codes is 
 
 $$
 g(x) = (x-\alpha^{b})(x-\alpha^{b+1})\cdots(x-\alpha^{b+2t-1}).
@@ -78,6 +78,53 @@ $$
 In (1), if $r(x)\neq 0$ then received word $y(x)$ has some errors. As per construction of generator polynomials of BCH codes and Reed-Solomon codes, 
 
 $$
-g(\alpha)=g(\alpha^{2})=\cdots=g(\alpha^{2t})=0.
+g(\alpha)=g(\alpha^{2})=\cdots=g(\alpha^{2t})=0. \tag{2}
+$$
+
+Let $e(x)$ be a error polynomial i.e.
+
+$$
+e(x)=\sum_{i=0}^{n-1}e_{i}x^{i}
+$$
+
+where $e_{i}$ is a coefficient which represents error value and $i$ represents error posistion in the code word. For example, $e_{i}$ is $\{0,1\}$ in binary codes. $e_{i}$ is $\mathbb{F}_{q}$ value in non-binary codes. Thus, received word polynomial is written as follows:
+
+$$
+y(x)=c(x)+e(x).
+$$
+
+Because $c(x)=q(x)g(x)$ and $(2)$,
+
+$$
+y(\alpha^{i})=e(\alpha^{i})\,\,\,(i=0,\ldots,2t).
+$$
+
+Then, we define **syndromes** as follows:
+
+$$
+S_{i} = e(\alpha^{i})=\sum_{j=0}^{n-1}e_{j}(\alpha^{i})^{j}.
+$$
+
+Let $\nu$ be total number of errors and $k_{1},\ldots,k_{\nu}$ be error positions. Then, we have
+
+$$
+S_{i}=\sum_{j=1}^{\nu}e_{k_{j}}(\alpha^{i})^{k_{j}}=\sum_{j=1}^{\nu}e_{k_{j}}(\alpha^{k_{j}})^{i}.
+$$
+
+Let $X_{j}=\alpha^{k_{j}}$, then we can re-write the syndromes as follows:
+
+$$
+S_{i}=\sum_{j=1}^{\nu}e_{k_{j}}(X_{j})^{i}. \tag{3}
+$$
+
+Consecutive $2t$ syndromes are shown as follows:
+
+$$
+\begin{aligned}
+S_{1}&=e_{k_{1}}X_{1}+e_{k_{2}}X_{2}+\cdots+e_{k_{\nu}}X_{\nu}\\
+S_{2}&=e_{k_{1}}X_{1}^{2}+e_{k_{2}}X_{2}^{2}+\cdots+e_{k_{\nu}}X_{\nu}^{2}\\
+&\vdots \\
+S_{2t}&=e_{k_{1}}X_{1}^{2t}+e_{k_{2}}X_{2}^{2t}+\cdots e_{k_{\nu}}X_{\nu}^{2t}.
+\end{aligned}
 $$
 
