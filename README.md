@@ -128,3 +128,29 @@ S_{2t}&=e_{k_{1}}X_{1}^{2t}+e_{k_{2}}X_{2}^{2t}+\cdots e_{k_{\nu}}X_{\nu}^{2t}.
 \end{aligned}
 $$
 
+We construct a polynomial whose roots are inverse of $X_{j}$. The polynomial is
+shown as follows:
+
+$$
+\sigma(x)=\prod_{j=1}^{\nu}(1-X_{j}x)=\sigma_{\nu}x^{\nu}+\sigma_{\nu-1}x^{\nu-1}+\cdots+\sigma_{1}x+\sigma_{0}. \tag{4}
+$$
+
+The polynomial is called **error locator polynomial**. By contruction, $\sigma_{0}=0$. Calculating $(4)$ directly, we get
+
+$$
+\begin{aligned}
+\sigma_{0}&=1\\
+-\sigma_{1}&= X_{1}+\cdots+X_{\nu} = \sum_{k=1}^{\nu}X_{k}\\
+\sigma_{2}&=X_{1}X_{2}+X_{1}X_{3}+\cdots+X_{1}X_{\nu}+\cdots+X_{\nu-1}X_{\nu}=\sum_{i<j}X_{i}X_{j}\\
+-\sigma_{3}&=X_{1}X_{2}X_{3}+\cdots+X_{\nu-2}X_{\nu-1}X_{\nu}=\sum_{i<j<k}X_{i}X{j}X_{k}\\
+&\vdots\\
+(-1)^{\nu}\sigma_{\nu}&=X_{1}X_{2}\cdots X_{\nu}.
+\end{aligned}
+$$
+
+As per [Newton's identities](https://en.wikipedia.org/wiki/Newton%27s_identities), $k$-th syndrome $S_{k}$ is given by
+
+$$
+-S_{k}=\sigma_{k-\nu}S_{k-\nu}+\sigma_{k-1}S_{k-\nu+1}+\cdots+\sigma_{1}S_{k-1}.
+$$
+
