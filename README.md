@@ -211,3 +211,8 @@ D^{(i)}&= i + 1 - D^{(i-1)}\\
 \tau^{(i)}(x)&=\sigma^{(i-1)}(x).
 \end{aligned}
 $$
+
+After $2t-1$ iterations, error locator polynomial $\sigma(x)$ is constructed.
+
+### Chien Search
+In order to determine error positions, we must find $\sigma(x)$'s roots. Therefore, for $i=1$ to $2t$, subsutitute $\alpha^{-i}$ into $\sigma(x)$ and judge if $\sigma(\alpha^{-i})=0$ or not. In order to accelerate searching speed, it is usual to implement several chien search circuits and prallelize search procedure.
