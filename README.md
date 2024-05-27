@@ -154,3 +154,60 @@ $$
 -S_{k}=\sigma_{k-\nu}S_{k-\nu}+\sigma_{k-1}S_{k-\nu+1}+\cdots+\sigma_{1}S_{k-1}.
 $$
 
+Here, we define two important polynomials. We define
+
+$$
+S(x)=S_{1}+S_{2}x+\cdots+S_{3}x^{2}+\cdots+S_{2t}x^{2t-1}=\sum_{j=0}^{2t-1}S_{j+1}x^{j}.
+$$
+
+$S(x)$ is called **syndrome polynomial**. And **error-evaluator polynomial** $\mathit{\Omega}(x)$ is defined by
+
+$$
+\mathit{\Omega}(x)\equiv S(x)\sigma(x)\pmod{x^{2t}}. \tag{5}
+$$
+
+Equation $(5)$ is called **key equation**. We are going to determine error locator poylnomial $\sigma(x)$ and locate error positions. After that we are going to determine error-evaluator polynomial and determine correct value of each symbol.
+
+### Berlekamp-Massey Algorithm
+Berlekamp-Massey algorithm is an algorithm to determine error locator polynomial. We illustrate Berlelkamp-Massey algorithm according to [Chang](https://ieeexplore.ieee.org/document/764911). The authors slightliy changed original Berlekamp-Massey algorithm in order to design faster decoder circuitry. We implemented code according to [Chang](https://ieeexplore.ieee.org/document/764911). The algorithm is shown as follows:
+
+**Initialization**
+
+$$
+\begin{aligned}
+D^{(-1)}&=0\\
+\delta&=1\\
+\sigma^{(-1)}(x)&=\tau^{(-1)}(x)=1\\
+\mathit{\Delta}^{(0)}&= S_{1}
+\end{aligned}
+$$
+
+**iteration**
+
+for $i=0$ to $2t-1$
+
+$$
+\begin{aligned}
+\sigma^{(i)}(x)&=\delta\sigma^{(i-1)}(x)+\mathit{\Delta}^{(i-1)}x\tau^{(i-1)}(x)\\
+\mathit{\Delta}^{(i+1)}&=S_{i+2}\sigma_{0}^{(i)}+S_{i+1}\sigma_{1}^{(i)}+\cdots+S_{i-\nu_{i}+2}\sigma_{\nu_{i}}^{(i)}
+\end{aligned}
+$$
+
+if $\mathit{\Delta}^{(i)}=0$ or $2D^{(i-1)}\geqq i+1$
+
+$$
+\begin{aligned}
+D^{(i)}&=D^{(i-1)}\\
+\tau^{(i)}(x)&=x\tau^{(i-1)}(x)
+\end{aligned}
+$$
+
+else
+
+$$
+\begin{aligned}
+D^{(i)}&= i + 1 - D^{(i-1)}\\
+\delta&=\mathit{\Delta}^{(i)}\\
+\tau^{(i)}(x)&=\sigma^{(i-1)}(x).
+\end{aligned}
+$$
