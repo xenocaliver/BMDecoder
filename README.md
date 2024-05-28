@@ -218,7 +218,7 @@ After $2t-1$ iterations, error locator polynomial $\sigma(x)$ is constructed.
 In order to determine error positions, we must find $\sigma(x)$'s roots. Therefore, for $i=1$ to $2t$, subsutitute $\alpha^{-i}$ into $\sigma(x)$ and judge if $\sigma(\alpha^{-i})=0$ or not. In order to accelerate searching speed, it is usual to implement several chien search circuits and prallelize search procedure.
 
 ### Forney's formula
-After finding error locations, we step forward to find correct value. Using [Forney's formula](https://en.wikipedia.org/wiki/Forney_algorithm#CITEREFGilln.d.), One can find correct value $Y_{i}$ at location $X_{i}$:
+After finding error locations, we step forward to find correct value. Using [Forney's formula](https://en.wikipedia.org/wiki/Forney_algorithm#CITEREFGilln.d.), One can find correct value $e_{k_{j}}$ at location $X_{k_{j}}$:
 
 $$
 e_{k_{j}}=-\frac{\mathit{\Omega}(X^{-k_{j}})}{\sigma^{\prime}(X^{-k_{j}})}.
