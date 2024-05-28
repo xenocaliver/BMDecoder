@@ -142,7 +142,7 @@ $$
 \sigma_{0}&=1\\
 -\sigma_{1}&= X_{1}+\cdots+X_{\nu} = \sum_{k=1}^{\nu}X_{k}\\
 \sigma_{2}&=X_{1}X_{2}+X_{1}X_{3}+\cdots+X_{1}X_{\nu}+\cdots+X_{\nu-1}X_{\nu}=\sum_{i<j}X_{i}X_{j}\\
--\sigma_{3}&=X_{1}X_{2}X_{3}+\cdots+X_{\nu-2}X_{\nu-1}X_{\nu}=\sum_{i<j<k}X_{i}X{j}X_{k}\\
+-\sigma_{3}&=X_{1}X_{2}X_{3}+\cdots+X_{\nu-2}X_{\nu-1}X_{\nu}=\sum_{i<j<k}X_{i}X_{j}X_{k}\\
 &\vdots\\
 (-1)^{\nu}\sigma_{\nu}&=X_{1}X_{2}\cdots X_{\nu}.
 \end{aligned}
@@ -169,7 +169,7 @@ $$
 Equation $(5)$ is called **key equation**. We are going to determine error locator poylnomial $\sigma(x)$ and locate error positions. After that we are going to determine error-evaluator polynomial and determine correct value of each symbol.
 
 ### Berlekamp-Massey Algorithm
-Berlekamp-Massey algorithm is an algorithm to determine error locator polynomial. We illustrate Berlelkamp-Massey algorithm according to [Chang](https://ieeexplore.ieee.org/document/764911). The authors slightliy changed original Berlekamp-Massey algorithm in order to design faster decoder circuitry. We implemented code according to [Chang](https://ieeexplore.ieee.org/document/764911). The algorithm is shown as follows:
+Berlekamp-Massey algorithm is an algorithm to determine error locator polynomial. We illustrate Berlekamp-Massey algorithm according to [Chang](https://ieeexplore.ieee.org/document/764911). The authors slightliy changed original Berlekamp-Massey algorithm in order to design faster decoder circuitry. We implemented code according to [Chang](https://ieeexplore.ieee.org/document/764911). The algorithm is shown as follows:
 
 **Initialization**
 
@@ -216,3 +216,12 @@ After $2t-1$ iterations, error locator polynomial $\sigma(x)$ is constructed.
 
 ### Chien Search
 In order to determine error positions, we must find $\sigma(x)$'s roots. Therefore, for $i=1$ to $2t$, subsutitute $\alpha^{-i}$ into $\sigma(x)$ and judge if $\sigma(\alpha^{-i})=0$ or not. In order to accelerate searching speed, it is usual to implement several chien search circuits and prallelize search procedure.
+
+### Forney's formula
+After finding error locations, we step forward to find correct value. Using [Forney's formula](https://en.wikipedia.org/wiki/Forney_algorithm#CITEREFGilln.d.), One can find correct value $Y_{i}$ at location $X_{i}$:
+
+$$
+e_{k_{j}}=-\frac{\mathit{\Omega}(X^{-k_{j}})}{\sigma^{\prime}(X^{-k_{j}})}.
+$$
+
+As for BCH codes, it is sufficient to find error position because it is binary. Therefore, BCH decoders do not need Forney's formula.
