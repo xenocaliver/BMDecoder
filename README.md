@@ -135,7 +135,7 @@ $$
 \sigma(x)=\prod_{j=1}^{\nu}(1-X_{j}x)=\sigma_{\nu}x^{\nu}+\sigma_{\nu-1}x^{\nu-1}+\cdots+\sigma_{1}x+\sigma_{0}. \tag{4}
 $$
 
-The polynomial is called **error locator polynomial**. By contruction, $\sigma_{0}=0$. Calculating $(4)$ directly, we get
+The polynomial is called **error locator polynomial**. By contruction, $\sigma_{0}=1$. Calculating $(4)$ directly, we get
 
 $$
 \begin{aligned}
