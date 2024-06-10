@@ -44,7 +44,7 @@ $$
 $q(x)$ is a quotient polynomial and $r(x)$ is a remainder polynomial. And $c(x)$ be a code polynomial and it is defined as follows:
 
 $$
-c(x)=x^{n-k}m(x)-r(x).\tag{1}
+c(x)=x^{n-k}m(x)-r(x) = q(x)g(x).\tag{1}
 $$
 
 A transmitter sends $c(x)$ and a receiver receives $y(x)$. One can check whether $y(x)$ has errors or not by means of dividing $y(x)$ by $g(x)$. If remainder $r(x)$ equals to $0$, $y(x) = c(x)$ in other words, $y(x)$ has no errors. On the other hand, if $r(x)\neq 0$, $y(x)$ has some errors.
@@ -221,7 +221,12 @@ In order to determine error positions, we must find $\sigma(x)$'s roots. Therefo
 After finding error locations, we step forward to find correct value. Using [Forney's formula](https://en.wikipedia.org/wiki/Forney_algorithm#CITEREFGilln.d.), One can find correct value $e_{k_{j}}$ at location $X_{k_{j}}$:
 
 $$
-e_{k_{j}}=-\frac{\mathit{\Omega}(X^{-k_{j}})}{\sigma^{\prime}(X^{-k_{j}})}.
+e_{k_{j}}=-\frac{\mathit{\Omega}(X^{-k_{j}})}{\sigma^{\prime}(X^{-k_{j}})}
 $$
 
+where
+
+$$
+\sigma^{\prime}(x) = \frac{d\sigma(x)}{dx}.
+$$
 As for BCH codes, it is sufficient to find error position because it is binary. Therefore, BCH decoders do not need Forney's formula.
