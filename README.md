@@ -229,4 +229,5 @@ where
 $$
 \sigma^{\prime}(x) = \frac{d\sigma(x)}{dx}.
 $$
+
 As for BCH codes, it is sufficient to find error position because it is binary. Therefore, BCH decoders do not need Forney's formula.
