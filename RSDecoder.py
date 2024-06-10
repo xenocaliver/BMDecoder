@@ -10,7 +10,7 @@ def generateRandomData(BaseElement, MultiplicativeOrder, CorrectableBits):
     q = BaseElement
     m = MultiplicativeOrder
     Fq = GF(q**m, name = 'alpha')
-    Dimension = q**m - 1 - 2*CorrectableBits
+    Dimension = int(q**m - 1 - 2*CorrectableBits)
     u = random_vector(Fq, Dimension)
     return u
 
@@ -20,11 +20,11 @@ def makeCodeword(data, BaseElement, MultiplicativeOrder, CorrectableBits):
     Fq = GF(q**m, name='alpha')
     x = PolynomialRing(Fq, 'x').gen()
    
-    Dimension = q**m - 1 - 2*CorrectableBits 
+    Dimension = int(q**m - 1 - 2*CorrectableBits)
     v = 0 + 0*x
     for i in range(0, Dimension):
         v += data[i]*x**i
-    v = v*x**(2*CorrectableBits)
+    v = v*x**(int(2*CorrectableBits))
     #calculate generator polynomial
     generator = getRSCodeGeneratingPolynomials(BaseElement, MultiplicativeOrder, CorrectableBits)
     # divide data bits by generator
@@ -49,18 +49,18 @@ def injectErrors(codeword, CorrectableBits, CodeLength, BaseElement, Multiplicat
         if r not in position:
             position.append(r)
     position.sort()
-    print position
+    print(position)
     tmp = 1*0 + 0*x
     for p in position:
         tmp += K.random_element()*x**p
-    print tmp
+    print(tmp)
     return tmp 
 #    return position
 # end of function
 
 def verify(pos1, pos2):
 
-    print "pos1 = {0}, pos2 = {1}".format(pos1, pos2)
+    print("pos1 = {0}, pos2 = {1}".format(pos1, pos2))
     if pos1 == pos2:
         return True
     else:
@@ -93,14 +93,14 @@ def RSDecoder(BaseElement, MultiplicativeOrder, CodeLength, CorrectableBits):
         result = verify(errors, ErrorPolynomial)
 
     if result == True:
-        print "Correction is successfully completed."
-        print "Corrected polynomial = {0}".format(y + ErrorPolynomial)
+        print("Correction is successfully completed.")
+        print("Corrected polynomial = {0}".format(y + ErrorPolynomial))
     else:
-        print "Oh my God! Correction is failed."
-        print "error position = {0}".format(errors)
-        print "result = {0}".format(pointout)
-        print "error locator = {0}".format(errorlocator)
-        print "syndromes = {0}".format(syndromes)
+        print("Oh my God! Correction is failed.")
+        print("error position = {0}".format(errors))
+        print("result = {0}".format(pointout))
+        print("error locator = {0}".format(errorlocator))
+        print("syndromes = {0}".format(syndromes))
         sys.exit()
     return result
 #end of function
@@ -123,7 +123,7 @@ def RSSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits):
     #check errors
     quorem = input.quo_rem(generator)
     if quorem[1] == 0:
-        print "<RSSyndrome> No Error"
+        print("<RSSyndrome> No Error")
         return quorem[1]
     
     remainder = quorem[1]
@@ -131,7 +131,7 @@ def RSSyndrome(input, BaseElement, MultiplicativeOrder, CorrectableBits):
     syndromes = []
     
     #add syndromes
-    for i in range(1, 2*CorrectableBits + 1):
+    for i in range(1, int(2*CorrectableBits + 1)):
         syndromes.append(remainder(alpha**i))
             
     return syndromes
@@ -149,24 +149,24 @@ def chien(errorlocator, BaseElement, MultiplicativeOrder):
 
     alpha = K.gen() 
     
-    print "<chien> errorlocator = {0}".format(errorlocator)
+    print("<chien> errorlocator = {0}".format(errorlocator))
     if errorlocator == 1:
-        print "No Error"
+        print("No Error")
         sys.exit(1)
         
     errorflag = 0
     errorposition = []
-    for i in range(0, q**m - 1):
+    for i in range(0, int(q**m - 1)):
         Ex = errorlocator(1/alpha**i)
         if Ex == 0:
-            print "bit {0} error detected".format(i)
+            print("bit {0} error detected".format(i))
             errorposition.append(i)                 #save error position for correction
             errorflag += 1
     
     if errorflag == 0 or errorflag != errorlocator.degree():
-        print "Logical Conflict Detected"
-        print "errorlocator = {0}".format(errorlocator)
-        print "But this program can not identify error bit"
+        print("Logical Conflict Detected")
+        print("errorlocator = {0}".format(errorlocator))
+        print("But this program can not identify error bit.")
         sys.exit(1)
     
     return errorposition
@@ -183,19 +183,19 @@ def Forney(errorlocator, syndromes, errorposition, BaseElement, MultiplicativeOr
     for s in syndromes:
         SyndromePolynomial += s*x**i 
         i += 1
-    print "S(x) = {0}".format(SyndromePolynomial)
+    print("S(x) = {0}".format(SyndromePolynomial))
     Omega = errorlocator*SyndromePolynomial
-    quorem = Omega.quo_rem(x**(2**CorrectableBits))
+    quorem = Omega.quo_rem(x**(int(2**CorrectableBits)))
     Omega = quorem[1]
-    print "Omega(x) = {0}".format(Omega)
+    print("Omega(x) = {0}".format(Omega))
     dsigma = diff(errorlocator, x)
-    print "sigma = {0}, dsigma = {1}".format(errorlocator, dsigma)
+    print("sigma = {0}, dsigma = {1}".format(errorlocator, dsigma))
     ErrorPolynomial = 0 + 0*x
     for pos in errorposition:
         numerator = Omega(alpha**(-pos))
         denominator = dsigma(alpha**(-pos))
         errorvalue = numerator/denominator
-        print "error value = {0}".format(errorvalue)
+        print("error value = {0}".format(errorvalue))
         ErrorPolynomial += errorvalue*x**pos
     
     return ErrorPolynomial
@@ -221,7 +221,7 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
 
     #Initially, DELTA = syndromes[0]
     DELTA =  syndromes[0]
-    print "syndromes = {0}".format(syndromes)
+    print("syndromes = {0}".format(syndromes))
     # iterative computation for sigma and tau
     for i in range(0, 2*CorrectableBits):
         tautmp = tau
@@ -232,31 +232,31 @@ def BMDecoder(syndromes, BaseElement, MultiplicativeOrder, CorrectableBits):
             D = i + 1 - D
             delta = DELTA
             tau = sigma
-        print "{0:>2} D = {1} delta = {2} tau = {3} DELTA = {4}".format(i, D, delta, tau, DELTA)
+        print("{0:>2} D = {1} delta = {2} tau = {3} DELTA = {4}".format(i, D, delta, tau, DELTA))
 
         #calculation sigma
         sigma = deltatmp*sigma+DELTA*x*tautmp
         sigmacoefficients = sigma.coefficients(sparse = False)
-        print "{0:>2} sigma = {1}".format(i, sigma)
+        print("{0:>2} sigma = {1}".format(i, sigma))
         #calculation DELTA
         #DELTA(i+1)=S_{i+1}*sigma_{0}^{(i)}+S_{i}*sigma_{1}^{(i)}+...+S_{i+1-nu_{i}}*sigma_{nu_{i}}^{(i)}
         #nu_{i} = sigma^{(i)}.degree()
-        if i == 2*CorrectableBits - 1:
+        if i == int(2*CorrectableBits - 1):
             zeta = sigma.coefficients(sparse = False)
             sigma = sigma/zeta[0]
             return sigma
         else:
             # calculate Degree of sigma
             nu = sigma.degree()
-            print "{0:>2} nu = {1}".format(i, nu)
+            print("{0:>2} nu = {1}".format(i, nu))
             # calculate DELTA
             DELTA = 0
             for j in range(0, nu + 1):
-                print "{0:>2} i + 1 -j = {1} j = {2}".format(i, i + 1 - j, j)
+                print("{0:>2} i + 1 -j = {1} j = {2}".format(i, i + 1 - j, j))
                 DELTA += syndromes[i + 1 - j]*sigmacoefficients[j]
 #                print "{0:>2} j = {1} x = {2}".format(i, j, syndromes[i + 1 - j]*sigmacoefficients[j])
 #            DELTA = DELTA%2
-            print "{0:>2} DELTA = {1}".format(i, DELTA)
+            print("{0:>2} DELTA = {1}".format(i, DELTA))
 #end of function
 
 ############################### get generator polynomial for BCH Code ##################################
@@ -267,7 +267,7 @@ def getRSCodeGeneratingPolynomials(BaseElement, MultiplicativeOrder, Correctable
     alpha = F.gen()
     x = PolynomialRing(F, "x").gen()
     generator = 1 + 0*x
-    for i in range(1, 2*CorrectableBits + 1):
+    for i in range(1, int(2*CorrectableBits + 1)):
         generator *= (x - alpha**i)
     return generator
 
