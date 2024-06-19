@@ -13,16 +13,16 @@ git clone https://github.com/xenocaliver/BMDecoder.git ./
 ```
 
 ## Run the demo program
-Run demo program as follows.  Regarding BCH code's demo program, run `BCHDecoder.py`.
+Run demo program as follows.  Regarding BCH code's demo program, run `BCHDecoder.sage`.
 
 ```sh
-sage BCHDecoder.py
+sage BCHDecoder.sage
 ```
 
-Regarding Reed-Solomon code's demo program, run `RSDecoder.py`.
+Regarding Reed-Solomon code's demo program, run `RSDecoder.sage`.
 
 ```sh
-sage RSDecoder.py
+sage RSDecoder.sage
 ```
 
 ## Implimentation details
